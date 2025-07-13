@@ -24,7 +24,7 @@ aws ec2 create-key-pair --key-name MyKeyPair --query 'KeyMaterial' --output text
 - more to read for Linux file permission in https://www.linuxfoundation.org/blog/blog/classic-sysadmin-understanding-linux-file-permissions
 
 **Step 4**: set up AWS configure
-run aws configure, get credential from you administrator user, and set region to us-west-2
+run aws configure, get credential from you administrator user, and set region to ap-southeast-2
 另打开一个新的终端页面，回到本地用户而非刚刚链接到ec2 虚拟机。在新的终端页面输入“ls -al ~/.aws”，“cat ~/.aws/credentials”，然后返回ec2 终端界面，把得到的【aws_access_key_id and aws_secret_access_key 】信息粘贴上去。
 
 ```bash
@@ -84,9 +84,9 @@ To read more for Yum in https://docs.redhat.com/en/documentation/red_hat_enterpr
 **Step 1**: Create ECR
 
 ```bash
-aws ecr create-repository --repository-name web --region us-west-2
+aws ecr create-repository --repository-name web --region ap-southeast-2
 ```
-check this ECR from AWS console, and "view push commands"
+check this ECR from AWS console, and "view push commands",
 
 **Step 2**: Clone repo
 
@@ -99,11 +99,20 @@ cd goexpert_handson/w5/repo/
 ```
 
 **Step 3**: Push image to ECR
-follow the cli in "view push commands" in previous Step.
-Open AWS console https://us-west-2.console.aws.amazon.com/ecr/private-registry/repositories?region=us-west-2, select `web` repo, you will find bottom `You can find "view push commands" on `
+follow the cli in "view push commands" in previous Step，create image under folder "goexpert_handson/w5/repo/", and then push this docker image to ECR 。 里面一共有4步：
 
+第一步，Retrieve an authentication token and authenticate your Docker client to your registry. Use the AWS CLI: “aws ecr get-login-password --region ap-southeast-2 | docker login --username AWS --password-stdin 400071841390.dkr.ecr.ap-southeast-2.amazonaws.com”
 
-create image under folder "goexpert_handson/w5/repo/", and then push this docker image to ECR following step in "view push commands"
+但是在第二步 “docker build -t web .”之前，先run “sudo usermod -aG docker ec2-user”，然后“sudo service docker restart”，退出虚拟机再重新ssh connect，应该就不会有docker cli不好使的问题。
+
+记得重新ssh connect到虚拟机后，依然要“cd goexpert_handson/w5/repo/”去到这个目录下，然后再“ocker build -t web .” 。
+
+第三步，After the build is completed, tag your image so you can push the image to this repository:
+docker tag web:latest 400071841390.dkr.ecr.ap-southeast-2.amazonaws.com/web:latest
+
+第四步：Run the following command to push this image to your newly created AWS repository:
+docker push 400071841390.dkr.ecr.ap-southeast-2.amazonaws.com/web:latest
+
 
 if some docker issue, please try restart
 
