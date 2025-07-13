@@ -20,10 +20,12 @@ aws ec2 create-key-pair --key-name MyKeyPair --query 'KeyMaterial' --output text
 **Step 3**: Connect to the EC2 instance
 - To connect to the EC2 instance from AWS console
 - run `chmod 400 MyKeyPair.pem`, if you get error `Permissions 0644 for 'MyKeyPair.pem' are too open.`
+- 点击进入刚创建的那个instance，在主页面找到【connect to instance】，点进来找到【SSH client】,然后复制“ssh -i "MyKeyPair.pem" ec2-user@ec2-54-79-176-74.ap-southeast-2.compute.amazonaws.com”到终端里。看到那只鸟的图案就证明成功在终端连上了刚建的ec2虚拟机。
 - more to read for Linux file permission in https://www.linuxfoundation.org/blog/blog/classic-sysadmin-understanding-linux-file-permissions
 
 **Step 4**: set up AWS configure
 run aws configure, get credential from you administrator user, and set region to us-west-2
+另打开一个新的终端页面，回到本地用户而非刚刚链接到ec2 虚拟机。在新的终端页面输入“ls -al ~/.aws”，“cat ~/.aws/credentials”，然后返回ec2 终端界面，把得到的【aws_access_key_id and aws_secret_access_key 】信息粘贴上去。
 
 ```bash
 aws configure
